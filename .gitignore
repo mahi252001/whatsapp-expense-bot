@@ -12,3 +12,9 @@ venv/
 .vscode/
 .idea/
 *.swp
+
+# macOS system files
+.DS_Store
+
+# Database
+*.db
