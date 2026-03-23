@@ -9,6 +9,9 @@ from app.expense_parser import parse_expense
 from app.ai_service import categorize_expense
 from app.cache_service import get_cached_category, save_merchant_category
 
+from app.user_service import get_or_create_user
+from app.welcome_service import get_welcome_message
+
 router = APIRouter()
 
 
@@ -22,6 +25,27 @@ async def whatsapp_webhook(
     try:
         message = Body.strip().lower()
         user_number = From
+
+
+
+        # =========================
+        # USER ONBOARDING
+        # =========================
+
+        user, is_new_user = get_or_create_user(db, user_number)
+
+        if is_new_user:
+
+            reply_text = get_welcome_message()
+
+            twilio_response = MessagingResponse()
+            twilio_response.message(reply_text)
+
+            return Response(
+                content=str(twilio_response),
+                media_type="application/xml"
+            )
+
 
         # =========================
         # ✅ SUMMARY COMMAND
